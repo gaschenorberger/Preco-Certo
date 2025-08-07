@@ -3,16 +3,18 @@ import Header from './componentes/Header';
 import Menu from './componentes/Menu';
 import Main from './componentes/Main';
 import ProductPage from './componentes/ProductPage';
+import ScrollToTop from './componentes/ScrollToTop';
 import './App.css';
 
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <Header />
       <Menu />
       <Routes>
         <Route path="/" element={<Main />} />
-        <Route path="/produto/:id" element={<ProductPage />} />
+        <Route path="/produto" element={<ProductPage />} />
       </Routes>
     </Router>
   );

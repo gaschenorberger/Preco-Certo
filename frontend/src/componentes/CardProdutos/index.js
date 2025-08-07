@@ -4,7 +4,7 @@ import "./style.css"
 export const CardProdutos = ({ nome_produto, preco, site_origem, imagem_url, id}) => {
     return(
       <div className="cardProdutos">
-          <Link to={`/produto/${id}`} className="aProduto">
+          <Link to={`/produto`} className="aProduto">
             <img src={imagem_url} className="produtoIMG"/>
             <h2 className="nomeProduto" data-tooltip={nome_produto}>{nome_produto}</h2>
             <section className="ratingProduto">

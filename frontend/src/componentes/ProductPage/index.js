@@ -5,6 +5,10 @@ import Footer from '../Footer'
 import img1 from '../../images/1.svg';
 import img2 from '../../images/2.svg';
 import img3 from '../../images/4.svg';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+ 
+
 
 const mockProduto = {
     id:"iphone-16-pro-max",
@@ -34,6 +38,18 @@ const mockProduto = {
 };
 
 function ProductPage() {
+
+    // const [produto,setProduto] = useState(null);
+
+    // useEffect(() => {
+    //         axios.get("") //Colocar a URL da API
+    //         .then(response => setProduto(response.data))
+    //         .catch(error => console.error('Erro ao buscar produto:', error));
+    //     }, []);
+
+    // if(!produto){
+    //    return <p>Carregando produto...</p>
+    // }
     return (
        <div>
             <Header/>
