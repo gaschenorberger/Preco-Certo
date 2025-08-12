@@ -283,7 +283,9 @@ def coletaDadosAmazon(): # OK
     imgProduto = navegador.find_elements(By.XPATH, "//div[contains(@class, 'dcl-product-image-container')]//img")
    
 
-    if produtos:
+    #===============================PÁGINA INICIAL INFORMAÇÕES================================
+
+    if produtos: 
 
         for produto, real, centavo, link, imgLink  in zip(produtos[:5], reais, centavos, linkProduto, imgProduto):
 
@@ -320,45 +322,60 @@ def coletaDadosAmazon(): # OK
 
             inserirDados(produto, "Amazon", preco, urlProduto, urlImg, categorias)
 
+
+
+        #===============================PÁGINA DO PRODUTO INFORMAÇÕES================================
+
         for link in linkList:
             navegador.get(link)
             time.sleep(2)
 
-            try:
+            try: # Obter parcelas de cada produto
                 parcelas = navegador.find_element(By.XPATH, "//span[contains(@class, 'best-offer-name')]")
                 parcelas = parcelas.text
                 parcelas = parcelas.split()
 
                 if parcelas[0] == 'ou': #ou R$ 189,00 em até 6x de R$ 31,50 sem juros --- (outro padrão de parcela)
-                    parcelas = parcelas.split()
                     parcelas = f"{parcelas[5]} {parcelas[6]} {parcelas[7]} {parcelas[8]}"
-                    print(parcelas)
+                    # print(parcelas)
                 
                 elif parcelas[3] == 'de': #Em até 12x de R$ 14,99 com juros --- (tem o 'de' antes do R$)
                     parcelas = f"{parcelas[2]} de {parcelas[4]} {parcelas[5]}"
-                    print(parcelas)
+                    # print(parcelas)
 
                 else: #Em até 2x R$ 21,63 sem juros --- (não tem o 'de' antes do R$)
                     parcelas = f"{parcelas[2]} de {parcelas[3]} {parcelas[4]}"
+                    # print(parcelas)
+
+                if parcelas:
+                    print("================PARCELAS================")
                     print(parcelas)
+                    print("========================================\n")
 
             except NoSuchElementException:
                 print("PARCELAS NÃO ENCONTRADAS")
-                # deletarDados(link)
 
-            try: 
+
+
+
+            try: # Obter imagens do produto
+
                 #imagens pequenas -> imagens = navegador.find_elements(By.XPATH, "//li[contains(@class, 'a-spacing-small') and contains(@class, 'item') and contains(@class, 'imageThumbnail') and contains(@class, 'a-declarative')]//img")
                 imagens = navegador.find_elements(By.XPATH, "//li[contains(@class, 'a-spacing-small') and contains(@class, 'item') and contains(@class, 'imageThumbnail') and contains(@class, 'a-declarative')]//input")
 
                 wait = WebDriverWait(navegador, 10)
 
+                print("================IMAGENS================")
+                
+
                 indiceInicial = 0
                 for imagem in imagens:
 
-                    # imagensSrc = imagem.find_element(By.XPATH, ".//img")
-                    # src = imagensSrc.get_attribute("src")
+                    # imagem.click()
+                    
+                    actions = ActionChains(navegador) 
+                    actions.move_to_element(imagem).perform() # Simula a ação do hover, passando o mouse em cima da imagem, para obter imagem (Exclusivo Amazon)
 
-                    imagem.click()
                     time.sleep(0.5)
                         
                     largeImg = wait.until(EC.presence_of_element_located((
@@ -371,8 +388,69 @@ def coletaDadosAmazon(): # OK
 
                     indiceInicial+=1
 
+                print("=======================================\n")
+
             except NoSuchElementException:
                 print("IMAGENS NÃO ENCONTRADAS")
+
+
+
+
+            try: # Obter informações/descrições resumidas
+
+                
+                infDetalhadas = navegador.find_element(By.XPATH, "//table[contains(@class, 'a-normal') and contains(@class, 'a-spacing-micro')]")
+
+                if infDetalhadas:
+
+                    print("================INFORMAÇÕES RESUMIDAS================")
+
+                    trElements = infDetalhadas.find_elements(By.XPATH, ".//tr[contains(@class, 'a-spacing-small')]")
+
+                    for tr in trElements: # Para cada elemento TR na lista de trElementos, percorre uma por uma
+                        # spanTitulo = tr.find_element(By.XPATH, ".//span[contains(@class, 'a-size-base')]")
+                        # spanTitulo = spanTitulo.text
+
+                        spans = tr.find_elements(By.XPATH, ".//span[contains(@class, 'a-size-base')]")
+
+                        spanTitulo = spans[0]    
+                        spanInformacao = spans[1]
+
+                        spanTitulo = spanTitulo.text
+                        spanInformacao = spanInformacao.text
+
+                        if spanTitulo and spanInformacao:
+                            print(f"{spanTitulo} - {spanInformacao}")
+
+                    print("=====================================================\n")
+
+            except NoSuchElementException:
+                print("INFORMAÇÕES DETALHADAS NÃO ENCONTRADAS")
+
+
+            
+
+            try:
+                # Elemento UL das informações completas
+                ulInfCompletas = navegador.find_element(By.XPATH, "//ul[contains(@class, 'a-unordered-list') and contains(@class, 'a-vertical') and contains(@class, 'a-spacing-mini')]")
+
+
+                if ulInfCompletas:
+
+                    print("================INFORMAÇÕES COMPLETAS================")
+
+                    liElement = ulInfCompletas.find_elements(By.XPATH, ".//li[contains(@class, 'a-spacing-mini')]")
+
+                    for li in liElement:  # Para cada elemento LI na lista de liElementos, percorre uma por uma
+                        spanText = li.find_element(By.XPATH, ".//span[contains(@class, 'a-list-item')]")
+                        infCompletas = spanText.text
+
+                        print(infCompletas)
+
+                    print("=====================================================\n")
+
+            except NoSuchElementException:
+                print("INFORMAÇÕES DETALHADAS NÃO ENCONTRADAS")
 
             time.sleep(1)
 

@@ -12,7 +12,13 @@
 // app.use(express.json());
 
 // const pool = new Pool({
-//   connectionString: 'postgresql://bd_precocerto_user:Lptizk3SMOVsutR6MlqsisbsLyjfYHgY@dpg-d1m8elmmcj7s739vqot0-a/bd_precocerto'
+//   connectionString: 'postgresql://bd_precocerto_user:Lptizk3SMOVsutR6MlqsisbsLyjfYHgY@dpg-d1m8elmmcj7s739vqot0-a.oregon-postgres.render.com:5432/bd_precocerto',
+//   ssl: {
+//     rejectUnauthorized: false // obrigatório para Render em ambiente local
+//   },
+//   max: 5,
+//   idleTimeoutMillis: 30000,
+//   connectionTimeoutMillis: 10000 // 10 segundos
 // });
 
 
@@ -29,7 +35,7 @@
 
 // app.get('/produtos', async (req, res) => {
 //   try {
-//     const result = await pool.query('SELECT * FROM VW_PRODUTOS_CATEGORIAS');
+//     const result = await pool.query('SELECT * FROM VW_PRODUTOS_TL_INICIAL');
 //     res.json(result.rows);
 //   } catch (error) {
 //     console.error('Erro ao buscar produtos:', error);
