@@ -367,7 +367,6 @@ def coletaDadosAmazon(): # OK
 
                 print("================IMAGENS================")
                 
-
                 indiceInicial = 0
                 for imagem in imagens:
 
@@ -452,6 +451,35 @@ def coletaDadosAmazon(): # OK
             except NoSuchElementException:
                 print("INFORMAÇÕES DETALHADAS NÃO ENCONTRADAS")
 
+
+
+
+            try:
+                # Espera a div principal carregar
+                divAvaliacoes = WebDriverWait(navegador, 5).until(
+                    EC.presence_of_element_located((By.ID, "averageCustomerReviews"))
+                )
+
+                # Tenta pegar o primeiro xpath, primeira variação
+                try:
+                    avaliacao = divAvaliacoes.find_element(By.XPATH, ".//span[contains(@class, 'a-size-small') and contains(@class, 'a-color-base')]").text
+
+                except NoSuchElementException:
+                    # Se não achou no primeiro formato, tenta o segundo
+                    avaliacao = divAvaliacoes.find_element(By.XPATH, ".//span[contains(@class, 'a-size-base') and contains(@class, 'a-color-base')]").text
+
+                print(f"Avaliações: {avaliacao}")
+
+                # Quantidade de avaliações
+                try:
+                    quantAvaliacao = navegador.find_element(By.ID, "acrCustomerReviewText").text
+                    print(f"Quantidade Avaliações: {quantAvaliacao}")
+                except NoSuchElementException:
+                    print("Quantidade de avaliações não encontrada.")
+
+            except TimeoutException:
+                print("AVALIAÇÕES NÃO ENCONTRADAS")
+
             time.sleep(1)
 
 
@@ -474,6 +502,8 @@ def coletaDadosMerLivre(): # OK
     
     # SECTION PRODUTOS
 
+    linkList = []
+
     esperar_elemento(navegador, "//div[contains(@class, 'dynamic-carousel__item-container')]")
     divProdutos = navegador.find_element(By.XPATH, "//div[contains(@class, 'dynamic-carousel__item-container')]")
 
@@ -485,6 +515,7 @@ def coletaDadosMerLivre(): # OK
 
     for produto, preco, centavo, img, link in zip(produtos[:5], precos, centavos[:5], imgProduto, linkProduto):
 
+
         produto = produto.text
         preco = preco.text
         centavo = centavo.text
@@ -494,6 +525,8 @@ def coletaDadosMerLivre(): # OK
 
     
         urlProduto = link.get_attribute('href')
+        linkList.append(urlProduto)
+
         urlImg = img.get_attribute('src')
  
         if centavo:
@@ -508,7 +541,22 @@ def coletaDadosMerLivre(): # OK
 
         categorias = detectar_categorias(produto)
         
-        inserirDados(produto, "Mercado Livre", preco, urlProduto, urlImg, categorias)       
+        inserirDados(produto, "Mercado Livre", preco, urlProduto, urlImg, categorias)     
+
+
+
+        #===============================PÁGINA DO PRODUTO INFORMAÇÕES================================
+
+    for link in linkList:
+        navegador.get(link)
+        time.sleep(2)
+
+        try:
+            parcelas = navegador.find_element(By.XPATH, "//p[contains(@class, 'ui-pdp-color--GREEN ui-pdp-size--MEDIUM ui-pdp-family--REGULAR')]")
+            parcelas = parcelas.text
+            print(parcelas)
+        except NoSuchElementException:
+            print(f"PARCELAS NAO ENCONTRADAS")
 
     navegador.quit() 
 
@@ -891,7 +939,7 @@ def coletaCompleta():
 
 # filtroCompleto()
 # coletaCompleta()
-coletaDadosAmazon()
+coletaDadosMerLivre()
 
 # coletaDadosAmericanas()
 
