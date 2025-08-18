@@ -552,13 +552,50 @@ def coletaDadosMerLivre(): # OK
         time.sleep(2)
 
         try:
-            parcelas = navegador.find_element(By.XPATH, "//p[contains(@class, 'ui-pdp-color--GREEN ui-pdp-size--MEDIUM ui-pdp-family--REGULAR')]")
-            parcelas = parcelas.text
+            parcelas = navegador.find_element(By.ID, "pricing_price_subtitle")
+            parcelas = parcelas.get_attribute("textContent").strip()
+            parcelas = " ".join(parcelas.split())
             print(parcelas)
+
+            print("==============================\n")
         except NoSuchElementException:
             print(f"PARCELAS NAO ENCONTRADAS")
 
+        
+        try:
+            imagens = navegador.find_elements(By.XPATH, "//span[contains(@class, 'ui-pdp-gallery__wrapper')]")
+
+            wait = WebDriverWait(navegador, 3)
+
+            for imagem in imagens:
+                # Pega todas as miniaturas dentro do wrapper
+                imagensMini = imagem.find_elements(By.XPATH, ".//button[contains(@class, 'ui-pdp-thumbnail__picture')]")
+
+                for mini in imagensMini:
+                    ActionChains(navegador).move_to_element(mini).perform()
+                    time.sleep(0.5)  
+
+
+                    try:
+                        largeImg = wait.until(
+                            EC.visibility_of_element_located(
+                                (By.XPATH, "//figure[contains(@class, 'ui-pdp-gallery__figure')]//img")
+                            )
+                        )
+                        linkSrc = largeImg.get_attribute("src")
+                        print(linkSrc)
+                    except TimeoutException:
+                        print("Imagem grande não encontrada")
+                        continue 
+
+        except NoSuchElementException:
+            print("IMAGENS NÃO ENCONTRADAS")
+
+
     navegador.quit() 
+
+# //*[@id="ui-pdp-main-container"]/div[1]/div/div[2]/div[1]/div/div/div[1]/span[1]/label/div/button/img
+# //*[@id="ui-pdp-main-container"]/div[1]/div/div[2]/div[1]/div/div/div[1]/span[3]/label/div/button/img
 
 # CELULARES E SMARTPHONES
 def coletaDadosAmericanas(): # OK
