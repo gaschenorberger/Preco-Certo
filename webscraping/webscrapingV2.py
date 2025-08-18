@@ -473,6 +473,8 @@ def coletaDadosAmazon(): # OK
                 # Quantidade de avaliações
                 try:
                     quantAvaliacao = navegador.find_element(By.ID, "acrCustomerReviewText").text
+                    quantAvaliacao = quantAvaliacao.split()
+                    quantAvaliacao = quantAvaliacao[0]
                     print(f"Quantidade Avaliações: {quantAvaliacao}")
                 except NoSuchElementException:
                     print("Quantidade de avaliações não encontrada.")
