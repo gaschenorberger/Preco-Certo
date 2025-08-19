@@ -593,6 +593,22 @@ def coletaDadosMerLivre(): # OK
         except NoSuchElementException:
             print("IMAGENS NÃO ENCONTRADAS")
 
+        
+        try:
+
+            infDetalhadas = navegador.find_element(By.XPATH, "//div[contains(@class, 'ui-vpp-highlighted-specs__features')]")
+
+            if infDetalhadas:
+                liElements = infDetalhadas.find_elements(By.XPATH, './/ul')
+
+                for li in liElements:
+                    print(li.text)
+
+        except NoSuchElementException:
+            print("INFORMAÇÕES NÃO ENCONTRADAS")
+
+            # CONTINUAR - EXTRAIR INF COMPLETAS--
+
 
     navegador.quit() 
 
