@@ -25,9 +25,9 @@ function Main() {
     return shuffled.slice(0, num);
   }
 
-  const smartphone = getRandomItems(produtos.filter(p => p.nome_categoria === "Smartphone"), 4);
-  const notebook = getRandomItems(produtos.filter(p => p.nome_categoria === "Notebook"), 4);
-  const amazon = getRandomItems(produtos.filter(p => p.site_origem === "Amazon"), 4);
+  const smartphone = getRandomItems(produtos.filter(p => p.nome_categoria === "Smartphone"), 12);
+  const notebook = getRandomItems(produtos.filter(p => p.nome_categoria === "Notebook"), 12);
+  const amazon = getRandomItems(produtos.filter(p => p.site_origem === "Amazon"), 12);
 
   return (
     <main>
