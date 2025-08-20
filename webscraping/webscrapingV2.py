@@ -564,35 +564,51 @@ def coletaDadosMerLivre(): # OK
             print(f"PARCELAS NAO ENCONTRADAS")
 
         
-        try:
-            imagens = navegador.find_elements(By.XPATH, "//span[contains(@class, 'ui-pdp-gallery__wrapper')]")
+        try: # Obter imagens do produto
 
-            wait = WebDriverWait(navegador, 3)
+            imagensdiv = navegador.find_element(By.XPATH, "//div[contains(@class, 'ui-pdp-gallery__column')]")            
 
-            for imagem in imagens:
-                # Pega todas as miniaturas dentro do wrapper
-                imagensMini = imagem.find_elements(By.XPATH, ".//button[contains(@class, 'ui-pdp-thumbnail__picture')]")
+            print("================IMAGENS================")
+            
+            finish = False
+            indiceInicial = 1
+            while finish != True:
 
-                for mini in imagensMini:
-                    ActionChains(navegador).move_to_element(mini).perform()
-                    time.sleep(0.5)  
+                try:
+                    imagem = imagensdiv.find_element(By.XPATH, f".//span[contains(@class, 'ui-pdp-gallery__wrapper[{indiceInicial}]')]")
+                    print(imagem)
+                    
+                    wait = WebDriverWait(imagem, 10)
 
+                    actions = ActionChains(navegador) 
+                    actions.move_to_element(imagem).perform() # Simula a ação do hover, passando o mouse em cima da imagem, para obter imagem 
 
-                    try:
-                        largeImg = wait.until(
-                            EC.visibility_of_element_located(
-                                (By.XPATH, "//figure[contains(@class, 'ui-pdp-gallery__figure')]//img")
-                            )
-                        )
-                        linkSrc = largeImg.get_attribute("src")
-                        print(linkSrc)
-                    except TimeoutException:
-                        print("Imagem grande não encontrada")
-                        continue 
+                    time.sleep(0.7)
+
+                        
+                    largeImg = wait.until(EC.presence_of_element_located((
+                        By.XPATH,
+                        f'.//figure[contains(@class, "ui-pdp-gallery__figure")]/img'
+                    )))
+
+                    linkSrc = largeImg.get_attribute("src")
+                    print(linkSrc)
+
+                    indiceInicial+=1
+                except NoSuchElementException:
+                    print("ACABARAM AS IMAGENS")
+                    finish = True
+
+                # imagem.click()
+                
+            
+            print("=======================================\n")
 
         except NoSuchElementException:
             print("IMAGENS NÃO ENCONTRADAS")
 
+# //*[@id="ui-pdp-main-container"]/div[1]/div/div[2]/div[1]/div/div/div[1]/span[1]/figure/img
+# //*[@id="ui-pdp-main-container"]/div[1]/div/div[2]/div[1]/div/div/div[1]/span[3]/figure/img
         
         try:
 
@@ -602,12 +618,24 @@ def coletaDadosMerLivre(): # OK
                 liElements = infDetalhadas.find_elements(By.XPATH, './/ul')
 
                 for li in liElements:
-                    print(li.text)
+                    li = li.text
+                    print(li)
 
         except NoSuchElementException:
             print("INFORMAÇÕES NÃO ENCONTRADAS")
 
-            # CONTINUAR - EXTRAIR INF COMPLETAS--
+
+        try:
+            infCompletaDiv = navegador.find_element(By.XPATH, "//div[contains(@class, 'ui-pdp-description')]")
+
+            if infCompletaDiv:
+                infCompleta = infCompletaDiv.find_element(By.XPATH, ".//p")
+                infCompleta = infCompleta.text
+
+                print(infCompleta)
+
+        except NoSuchElementException:
+            print("SEM DESCRIÇÃO COMPLETA")
 
 
     navegador.quit() 
