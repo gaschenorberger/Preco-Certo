@@ -1,13 +1,66 @@
-.amazonSection{
-    justify-content: flex-start;
+/* Wrapper envolve os botões e o carrossel */
+.carousel-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
 }
 
-.produtosAmazon{
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    padding: 20px;
-    margin: 0 auto;
-    flex-wrap: wrap;
-    max-width: 1200px;
+/* Botões menores, ao lado */
+.carousel-container {
+  position: relative; /* permite posicionar os botões em cima */
 }
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  width: 40px;
+  transform: translateY(-50%);
+  background-color: #fff;
+  border: 1px solid #ddd;
+  color: #F27BBD;
+  padding: 6px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+  z-index: 10; 
+}
+
+.carousel-btn:hover {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+  transform: translateY(-50%) scale(1.05);
+}
+
+.carousel-btn:disabled {
+  opacity: .5;
+  cursor: default;
+  transform: translateY(-50%);
+}
+
+.carousel-btn.left {
+  left: 2px; 
+}
+
+.carousel-btn.right {
+  right: 4px; 
+}
+
+.produtosAmazon {
+  flex: 1; 
+  justify-content: center;
+  padding: -10 !important;
+  gap: 0 !important;
+  margin:0 50px 0 50px;
+}
+.produtosAmazon .keen-slider__slide {
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex;
+}
+.produtosAmazon .keen-slider__slide > * {
+  width: 80% !important;
+  margin: 0  !important;
+}
+
