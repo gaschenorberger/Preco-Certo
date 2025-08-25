@@ -44,6 +44,74 @@
     background-color: #0056b3;
 }
 
+.search-results-container {
+  width: 100%;
+  max-width: 900px;
+  background-color: #ebebeb;
+  border-radius: 0 0 15px 15px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  margin-top: 5px;
+  padding: 10px;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 400px; 
+  overflow-y: scroll;
+}
+
+.search-result-item {
+  text-decoration: none;
+  color: #333;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.search-result-item:hover {
+  background-color: #f0f0f0;
+}
+
+/* ESTILOS ESPECÍFICOS DO CARD DE PRODUTOS PARA A LISTA DE BUSCA */
+.search-results-container .cardProdutos {
+  width: 100%;
+  min-width: unset;
+  max-width: unset;
+  box-shadow: none;
+  border: none;
+  padding: 0;
+  flex-direction: row;
+  text-align: left;
+}
+
+.search-results-container .cardProdutos .produtoIMG {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 0;
+  margin-right: 15px;
+}
+
+.search-results-container .cardProdutos .nomeProduto {
+  -webkit-line-clamp: 2; 
+  font-size: 14px;
+  font-weight: normal;
+}
+
+.search-results-container .cardProdutos .precoProduto {
+  font-size: 16px;
+  margin-left: auto;
+}
+
+.search-results-container .cardProdutos .lojaNome,
+.search-results-container .cardProdutos .ratingProduto {
+  display: none;
+}
 
 @media (max-width: 1024px) {
     .searchBar {

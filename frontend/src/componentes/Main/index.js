@@ -2,9 +2,7 @@ import { useEffect, useState } from "react";
 import Carousel from "../BannerCarousel";
 import { Titulo } from "../Titulo";
 import StoreList from "../StoreList";
-import CelularSection from "./SecaoCelulares";
-import AmazonSection from "./SecaoAmazon";
-import NbSection from "./SecaoNotebooks";
+import MainSections from "./MainSections";
 import HistorySection from "./SecaoHistory";
 import Footer from "../Footer";
 import './style.css';
@@ -40,9 +38,18 @@ function Main() {
       </Titulo>
 
       <StoreList />
-      <CelularSection produtos={smartphone} />
-      <AmazonSection produtos={amazon} />
-      <NbSection produtos={notebook} />
+      <MainSections
+        produtos={smartphone} 
+        title="Encontre o celular ideal, com a melhor oferta!"
+       />
+      <MainSections
+        produtos={amazon} 
+        title="As melhores ofertas você encontra na Amazon!"
+       />
+      <MainSections
+        produtos={notebook} 
+        title="Notebook de qualidade, somente aqui na Preço Certo!"
+       />
       <HistorySection />
       <Footer />
     </main>

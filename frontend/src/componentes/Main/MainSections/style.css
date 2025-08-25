@@ -1,3 +1,9 @@
+.amazonsection{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 /* Wrapper envolve os botões e o carrossel */
 .carousel-wrapper {
   display: flex;
@@ -47,19 +53,30 @@
   right: 4px; 
 }
 
-.produtosNb {
-  flex: 1; 
+.keen-slider__slide > * {
+  margin: 0 !important;
   padding: 0 !important;
-  gap: 0 !important;
-  margin:0;
 }
-.produtosNb .keen-slider__slide {
+
+.keen-slider__slide .cardProdutos {
+  padding: 0;
+  margin: 0;
+}
+
+/* .produtosAmazon {
+  flex: 1; 
+  justify-content: center;
+  /* padding: -10 !important;
+  gap: 0 !important;
+  margin:0 50px 0 50px; */
+/* }
+.produtosAmazon .keen-slider__slide {
   margin: 0 !important;
   padding: 0 !important;
   display: flex;
 }
-.produtosNb .keen-slider__slide > * {
-  width: 70% !important;
-  margin: 0 !important;
-}
+.produtosAmazon .keen-slider__slide > * {
+  width: 80% !important;
+  margin: 0  !important;
+} */ 
 
