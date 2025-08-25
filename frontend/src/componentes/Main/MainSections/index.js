@@ -19,8 +19,8 @@ const MainSections = ({ produtos = [], title }) => {
     {
       loop: produtos.length >= 5,
       slides: {
-        perView: 5,
-        spacing: 0,
+        perView: 4,
+        spacing: 20,
       },
       created() {
         setReady(true);
@@ -28,6 +28,7 @@ const MainSections = ({ produtos = [], title }) => {
       destroyed() {
         setReady(false);
       },
+      centered: true, // Centraliza os slides
     },
     // 
     // [sliderKey] 
@@ -42,9 +43,6 @@ const MainSections = ({ produtos = [], title }) => {
     } catch { /* evita erro em runtime */ }
   };
 
-  if (!produtos || produtos.length === 0) {
-    return <div>Carregando produtos...</div>;
-  }
 
   return (
     <section className="amazonSection">
@@ -54,35 +52,38 @@ const MainSections = ({ produtos = [], title }) => {
         </Titulo>
       </h2>
 
-      <div className="carousel-container">
-        <div key={sliderKey} ref={sliderRef} className="keen-slider produtosAmazon">
-          {produtos.map((produto) => (
-            <div key={produto.produto_id} className="keen-slider__slide">
-              <CardProdutos {...produto} />
-            </div>
-          ))}
+      {/* Envolve o carousel-container com o novo wrapper */}
+      <div className="carousel-wrapper">
+        <div className="carousel-container">
+          <div key={sliderKey} ref={sliderRef} className="keen-slider produtosAmazon">
+            {produtos.map((produto) => (
+              <div key={produto.produto_id} className="keen-slider__slide">
+                <CardProdutos {...produto} />
+              </div>
+            ))}
+          </div>
+
+          <button
+            className="carousel-btn left"
+            onClick={safe((s) => s.prev())}
+            aria-label="Anterior"
+            disabled={!ready}
+          >
+            <ChevronLeft size={20} />
+          </button>
+
+          <button
+            className="carousel-btn right"
+            onClick={safe((s) => s.next())}
+            aria-label="Próximo"
+            disabled={!ready}
+          >
+            <ChevronRight size={20} />
+          </button>
         </div>
-
-        <button
-          className="carousel-btn left"
-          onClick={safe((s) => s.prev())}
-          aria-label="Anterior"
-          disabled={!ready}
-        >
-          <ChevronLeft size={20} />
-        </button>
-
-        <button
-          className="carousel-btn right"
-          onClick={safe((s) => s.next())}
-          aria-label="Próximo"
-          disabled={!ready}
-        >
-          <ChevronRight size={20} />
-        </button>
       </div>
     </section>
   );
-};
+}
 
 export default MainSections;

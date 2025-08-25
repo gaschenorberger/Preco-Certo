@@ -4,11 +4,10 @@
   align-items: center;
 }
 
-/* Wrapper envolve os botões e o carrossel */
 .carousel-wrapper {
-  display: flex;
-  align-items: center;
-  position: relative;
+  max-width: 1200px; /* Ou um valor que se ajuste ao seu layout */
+  margin: 0 auto; /* Centraliza o wrapper na página */
+  padding: 0 10px; /* Adiciona um padding para os botões */
 }
 
 /* Botões menores, ao lado */
@@ -46,11 +45,13 @@
 }
 
 .carousel-btn.left {
-  left: 2px; 
+  left: 0px; 
+  margin-left: -20px;
 }
 
 .carousel-btn.right {
-  right: 4px; 
+  right: 0px; 
+  margin-right: -20px; 
 }
 
 .keen-slider__slide > * {

@@ -30,7 +30,7 @@ const Carousel = () => {
     }, [sliderInstance])
 
     return (
-        <div className="carousel-wrapper">
+        <div className="carousel-wrapper-banner">
             <div ref={sliderRef} className="keen-slider custom-carousel">
                 {banners.map((banner, idx) => (
                     <div key={banner.id} className={`keen-slider__slide ${idx === currentSlide ? 'active' : ''}`}>
