@@ -179,8 +179,21 @@ def detectar_categorias(produto_nome):
         pass
     else:
         if 'iphone' in nome:
-            categorias.append('iPhone')
-            categorias.append('Smartphone')
+            if 'cabo' in nome:
+                pass
+            elif 'notebook' in nome:
+                pass
+            elif 'controlador' in nome:
+                pass
+            elif 'smartwatch' in nome:
+                pass
+            elif 'tablet' in nome:
+                pass
+            elif 'monitor' in nome: 
+                pass
+            else:
+                categorias.append('iPhone')
+                categorias.append('Smartphone')
 
         if 'macbook' in nome:
             categorias.append('Notebook')
@@ -196,7 +209,12 @@ def detectar_categorias(produto_nome):
             categorias.append('Smartphone')
 
         if 'notebook' in nome:
-            categorias.append('Notebook')
+            if 'caneta' in nome:
+                pass
+            elif 'adaptador' in nome:
+                pass
+            else:
+                categorias.append('Notebook')
 
         if 'smartwatch' in nome:
             categorias.append('Smartwatch')
