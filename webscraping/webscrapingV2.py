@@ -9,6 +9,7 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.common.exceptions import  ElementNotInteractableException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
+import undetected_chromedriver as uc
 import os
 import time
 from bs4 import BeautifulSoup
@@ -250,18 +251,31 @@ def esperar_elemento(navegador, xpath, tempo=10):
         return None
 
 def iniciar_chrome(url, headless='off'):
-    options = webdriver.ChromeOptions()
-    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+
+    # options = webdriver.ChromeOptions()
+
+    options = uc.ChromeOptions()
+    prefs = {
+        "profile.default_content_setting_values.notifications": 2,
+        "profile.default_content_settings.popups": 0,
+        "profile.default_content_setting_values.automatic_downloads": 1
+    }
+
+    options.add_argument('--start-maximized')
+    options.add_argument('--disable-blink-features=AutomationControlled')
     options.add_argument("--disable-extensions")
-    options.add_argument("--start-maximized")
-    
+    # options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+    options.add_experimental_option("prefs", prefs)
+
     if headless == 'on':
         options.add_argument("--headless")
 
-    navegador = webdriver.Chrome(options=options)
-    navegador.get(url)
+    driver = uc.Chrome(options=options, headless=False)
+    driver.get(url)
 
-    return navegador
+    time.sleep(1)
+    return driver
+
 
 
 
@@ -693,18 +707,16 @@ def coletaDadosAmericanas(): # OK
     try:
         # Espera até que o elemento esteja presente e clicável
         popUp = WebDriverWait(navegador, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//a[contains(@class, 'ins-sample-element-children')]"))
+            EC.element_to_be_clickable((By.XPATH, "//a[contains(@class, 'ins-element-link')]"))
         )
         try:
-            # Tenta clicar normal
-            popUp.click()
-            print("Popup clicado com sucesso!")
-        except ElementNotInteractableException:
-            # Se não conseguir, tenta via JavaScript
+            # Tenta clicar via JavaScript (ignora overlays)
             navegador.execute_script("arguments[0].click();", popUp)
             print("Popup clicado via JavaScript!")
+        except Exception as e:
+            print("Erro ao clicar no popup via JS:", e)
     except TimeoutException as e:
-        print("Popup não encontrado ou não clicável dentro do timeout:", e)
+        print("Popup não encontrado ou não clicável dentro do timeout:")
     except Exception as e:
         print("Erro inesperado:", e)
 
@@ -740,6 +752,7 @@ def coletaDadosAmericanas(): # OK
         else:
 
             try:
+                linkList = []
                 for i, (produto, preco, link, imgLink) in enumerate(zip(produtos[:5], precos, linkProduto, imgProduto), start=1):
                     urlProduto = link.get_attribute('href')
                     urlImg = imgLink.get_attribute('src')
@@ -756,6 +769,7 @@ def coletaDadosAmericanas(): # OK
                     print(f'LINK: {urlProduto}')
                     print(f'IMG: {urlImg}\n')
 
+                    linkList.append(urlProduto) 
                     categorias = detectar_categorias(produto)
 
                     
@@ -767,7 +781,29 @@ def coletaDadosAmericanas(): # OK
 
     except TimeoutException:
         print("Produtos não carregaram a tempo. Verifique se o XPath está correto ou se é necessário rolar mais")
-    
+
+
+        for link in linkList:
+            print("===========================================")
+            print("INICIANDO COLETA DADOS DA PÁGINA DO PRODUTO\n")
+
+            navegador.get(link)
+            time.sleep(2)
+
+
+            try: # Obter parcelas de cada produto
+                parcelas = navegador.find_element(By.XPATH, "//div[contains(@class, 'ProductPrice_installment__XemVq')]")
+                parcelas = parcelas.get_attribute("textContent").strip() #.strip() remove espaços no começo e no fim
+                parcelas = " ".join(parcelas.split()) 
+
+                print("================PARCELAS================")
+                print(parcelas)
+                print("========================================\n")
+            except NoSuchElementException:
+                print(f"PARCELAS NAO ENCONTRADAS")
+
+
+
     navegador.quit()
 
 # CELULARES E SMARTPHONES
@@ -1060,7 +1096,7 @@ def coletaCompleta():
 
 # filtroCompleto()
 # coletaCompleta()
-coletaDadosMerLivre()
+coletaDadosAmericanas()
 
 # coletaDadosAmericanas()
 
