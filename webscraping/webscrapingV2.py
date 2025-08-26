@@ -568,67 +568,64 @@ def coletaDadosMerLivre(): # OK
         #===============================PÁGINA DO PRODUTO INFORMAÇÕES================================
 
     for link in linkList:
+
+        print("===========================================")
+        print("INICIANDO COLETA DADOS DA PÁGINA DO PRODUTO\n")
+
         navegador.get(link)
         time.sleep(2)
+
 
         try:
             parcelas = navegador.find_element(By.ID, "pricing_price_subtitle")
             parcelas = parcelas.get_attribute("textContent").strip()
             parcelas = " ".join(parcelas.split())
-            print(parcelas)
 
-            print("==============================\n")
+            print("================PARCELAS================")
+            print(parcelas)
+            print("========================================\n")
         except NoSuchElementException:
             print(f"PARCELAS NAO ENCONTRADAS")
 
         
         try: # Obter imagens do produto
-
-            imagensdiv = navegador.find_element(By.XPATH, "//div[contains(@class, 'ui-pdp-gallery__column')]")            
-
+     
             print("================IMAGENS================")
-            
-            finish = False
-            indiceInicial = 1
-            while finish != True:
+            time.sleep(3)
 
-                try:
-                    imagem = imagensdiv.find_element(By.XPATH, f".//span[contains(@class, 'ui-pdp-gallery__wrapper[{indiceInicial}]')]")
-                    print(imagem)
-                    
-                    wait = WebDriverWait(imagem, 10)
+            # Remove tooltip via JS
+            try:
+                navegador.execute_script("""
+                    let tooltip = document.querySelector('.onboarding-cp-tooltip');
+                    if (tooltip) { tooltip.parentNode.removeChild(tooltip); }
+                """)
+                print("Tooltip de onboarding removido via JS.")
+                time.sleep(1)
+            except Exception as e:
+                print(f"Erro ao remover tooltip via JS: {e}")
 
-                    actions = ActionChains(navegador) 
-                    actions.move_to_element(imagem).perform() # Simula a ação do hover, passando o mouse em cima da imagem, para obter imagem 
+            # Pega todas as imagens grandes do carrossel (sem clicar)
+            try:
+                imagens_grandes = navegador.find_elements(By.XPATH, "//figure[contains(@class, 'ui-pdp-gallery__figure')]//img")
+                links_imgs = set()
+                for img in imagens_grandes:
+                    src = img.get_attribute("src")
+                    if src and src not in links_imgs:
+                        print(src)
+                        links_imgs.add(src)
+                if not links_imgs:
+                    print("Nenhuma imagem grande encontrada.")
+            except Exception as e:
+                print(f"Erro ao obter imagens grandes: {e}")
 
-                    time.sleep(0.7)
-
-                        
-                    largeImg = wait.until(EC.presence_of_element_located((
-                        By.XPATH,
-                        f'.//figure[contains(@class, "ui-pdp-gallery__figure")]/img'
-                    )))
-
-                    linkSrc = largeImg.get_attribute("src")
-                    print(linkSrc)
-
-                    indiceInicial+=1
-                except NoSuchElementException:
-                    print("ACABARAM AS IMAGENS")
-                    finish = True
-
-                # imagem.click()
-                
-            
             print("=======================================\n")
 
         except NoSuchElementException:
             print("IMAGENS NÃO ENCONTRADAS")
-
-# //*[@id="ui-pdp-main-container"]/div[1]/div/div[2]/div[1]/div/div/div[1]/span[1]/figure/img
-# //*[@id="ui-pdp-main-container"]/div[1]/div/div[2]/div[1]/div/div/div[1]/span[3]/figure/img
         
-        try:
+        try: # Obter informações/descrições resumidas
+
+            print("================INFORMAÇÕES RESUMIDAS================")
 
             infDetalhadas = navegador.find_element(By.XPATH, "//div[contains(@class, 'ui-vpp-highlighted-specs__features')]")
 
@@ -639,11 +636,16 @@ def coletaDadosMerLivre(): # OK
                     li = li.text
                     print(li)
 
+            print("=====================================================\n")
+
         except NoSuchElementException:
             print("INFORMAÇÕES NÃO ENCONTRADAS")
 
 
-        try:
+        try: # Obter informações/descrições completas
+
+            print("================INFORMAÇÕES COMPLETAS================")
+
             infCompletaDiv = navegador.find_element(By.XPATH, "//div[contains(@class, 'ui-pdp-description')]")
 
             if infCompletaDiv:
@@ -651,15 +653,33 @@ def coletaDadosMerLivre(): # OK
                 infCompleta = infCompleta.text
 
                 print(infCompleta)
+            
+            print("=====================================================\n")
 
         except NoSuchElementException:
             print("SEM DESCRIÇÃO COMPLETA")
 
 
+        try: # Obter avaliações
+
+            divAvaliacoes = navegador.find_element(By.XPATH, "//div[contains(@class, 'ui-pdp-header__info')]")
+
+            if divAvaliacoes:
+
+                avaliacao = divAvaliacoes.find_element(By.XPATH, ".//span[contains(@class, 'ui-pdp-review__rating')]")
+                avaliacao = avaliacao.text
+                print(f"Avaliações: {avaliacao}")
+
+                quantAvaliacao = divAvaliacoes.find_element(By.XPATH, ".//span[contains(@class, 'ui-pdp-review__amount')]")
+                quantAvaliacao = quantAvaliacao.text
+                print(f"Quantidade Avaliações: {quantAvaliacao}")
+
+        except NoSuchElementException:
+            print("AVALIAÇÕES NÃO ENCONTRADAS") 
+
     navegador.quit() 
 
-# //*[@id="ui-pdp-main-container"]/div[1]/div/div[2]/div[1]/div/div/div[1]/span[1]/label/div/button/img
-# //*[@id="ui-pdp-main-container"]/div[1]/div/div[2]/div[1]/div/div/div[1]/span[3]/label/div/button/img
+
 
 # CELULARES E SMARTPHONES
 def coletaDadosAmericanas(): # OK
