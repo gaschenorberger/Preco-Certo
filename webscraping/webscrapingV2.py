@@ -783,28 +783,53 @@ def coletaDadosAmericanas(): # OK
         print("Produtos não carregaram a tempo. Verifique se o XPath está correto ou se é necessário rolar mais")
 
 
-        for link in linkList:
-            print("===========================================")
-            print("INICIANDO COLETA DADOS DA PÁGINA DO PRODUTO\n")
+    for link in linkList:
+        print("===========================================")
+        print("INICIANDO COLETA DADOS DA PÁGINA DO PRODUTO\n")
 
-            navegador.get(link)
-            time.sleep(2)
-
-
-            try: # Obter parcelas de cada produto
-                parcelas = navegador.find_element(By.XPATH, "//div[contains(@class, 'ProductPrice_installment__XemVq')]")
-                parcelas = parcelas.get_attribute("textContent").strip() #.strip() remove espaços no começo e no fim
-                parcelas = " ".join(parcelas.split()) 
-
-                print("================PARCELAS================")
-                print(parcelas)
-                print("========================================\n")
-            except NoSuchElementException:
-                print(f"PARCELAS NAO ENCONTRADAS")
+        navegador.get(link)
+        time.sleep(2)
 
 
+        try: # Obter parcelas de cada produto
+            parcelas = navegador.find_element(By.XPATH, "//div[contains(@class, 'ProductPrice_installment__XemVq')]")
+            parcelas = parcelas.get_attribute("textContent").strip() #.strip() remove espaços no começo e no fim
+            parcelas = " ".join(parcelas.split()) 
 
-    navegador.quit()
+            print("================PARCELAS================")
+            print(parcelas)
+            print("========================================\n")
+        except NoSuchElementException:
+            print(f"PARCELAS NAO ENCONTRADAS")
+
+
+
+        try: # Obter imagens do produto
+            print("================IMAGENS================")
+            time.sleep(3)
+
+            try:
+                # Pega todas as miniaturas de imagem
+                miniaturas = navegador.find_elements(By.XPATH, "//button[contains(@class, 'ImageGallerySelector_selectedImage__4XSpe)]//img")
+                links_imgs = set()
+                for thumb in miniaturas:
+                    # Tenta pegar o link da imagem grande do atributo data-zoom, data-src ou src
+                    linkSrc = thumb.get_attribute("data-zoom") or thumb.get_attribute("data-src") or thumb.get_attribute("src")
+                    if linkSrc and linkSrc not in links_imgs:
+                        print(linkSrc)
+                        links_imgs.add(linkSrc)
+                if not links_imgs:
+                    print("Nenhuma imagem encontrada nas miniaturas.")
+            except Exception as e:
+                print(f"Erro ao obter imagens grandes: {e}")
+
+            print("=======================================\n")
+
+        except NoSuchElementException:
+            print("IMAGENS NÃO ENCONTRADAS")
+
+
+
 
 # CELULARES E SMARTPHONES
 def coletaDadosMagazine(): # OK 
