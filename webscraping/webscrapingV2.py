@@ -270,7 +270,7 @@ def iniciar_chrome(url, headless='off'):
     if headless == 'on':
         options.add_argument("--headless")
 
-    driver = uc.Chrome(options=options, headless=False)
+    driver = uc.Chrome(options=options)
     driver.get(url)
 
     time.sleep(1)
@@ -806,24 +806,14 @@ def coletaDadosAmericanas(): # OK
 
         try: # Obter imagens do produto
             print("================IMAGENS================")
-            time.sleep(3)
+            time.sleep(2)
 
-            try:
-                # Pega todas as miniaturas de imagem
-                miniaturas = navegador.find_elements(By.XPATH, "//button[contains(@class, 'ImageGallerySelector_selectedImage__4XSpe)]//img")
-                links_imgs = set()
-                for thumb in miniaturas:
-                    # Tenta pegar o link da imagem grande do atributo data-zoom, data-src ou src
-                    linkSrc = thumb.get_attribute("data-zoom") or thumb.get_attribute("data-src") or thumb.get_attribute("src")
-                    if linkSrc and linkSrc not in links_imgs:
-                        print(linkSrc)
-                        links_imgs.add(linkSrc)
-                if not links_imgs:
-                    print("Nenhuma imagem encontrada nas miniaturas.")
-            except Exception as e:
-                print(f"Erro ao obter imagens grandes: {e}")
+            divImageLarge = navegador.find_element(By.XPATH, "//div[contains(@class, 'ProductImageGallery_imageGalleryViewer__T9nff')]")
+            imageLarge = divImageLarge.find_element(By.XPATH, ".//img")
 
-            print("=======================================\n")
+            srcimg = imageLarge.get_attribute("data-zoom")
+            print(srcimg)
+
 
         except NoSuchElementException:
             print("IMAGENS NÃO ENCONTRADAS")
