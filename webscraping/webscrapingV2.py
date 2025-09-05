@@ -808,18 +808,76 @@ def coletaDadosAmericanas(): # OK
             print("================IMAGENS================")
             time.sleep(2)
 
+            listSrc = []
+            
             divImageLarge = navegador.find_element(By.XPATH, "//div[contains(@class, 'ProductImageGallery_imageGalleryViewer__T9nff')]")
             imageLarge = divImageLarge.find_element(By.XPATH, ".//img")
 
             srcimg = imageLarge.get_attribute("data-zoom")
-            print(srcimg)
+            # print(srcimg)
+
+            listSrc.append(srcimg)
+
+
+            try:
+
+                divContainerImg = navegador.find_element(By.XPATH, "//div[contains(@class, 'ImageGallerySelector_selectorsContainer__dVmbp')]")
+                btnImgMini = divContainerImg.find_elements(By.XPATH, ".//button")
+
+                for btn in btnImgMini:
+                    ActionChains(navegador).move_to_element(btn).perform()
+                    time.sleep(1)
+
+                    divImageLarge = navegador.find_element(By.XPATH, "//div[contains(@class, 'ProductImageGallery_imageGalleryViewer__T9nff')]")
+                    imageLarge = divImageLarge.find_element(By.XPATH, ".//img")
+
+                    srcimg = imageLarge.get_attribute("data-zoom")
+                    # print(srcimg)
+
+                    if srcimg in listSrc:
+                        pass
+                    else:
+                        listSrc.append(srcimg)
+
+                for i in listSrc:
+                    print(i)
+
+
+            except NoSuchElementException:
+                print("PRODUTO COM APENAS UMA FOTO")
+
+                for i in listSrc:
+                    print(i)
 
 
         except NoSuchElementException:
             print("IMAGENS NÃO ENCONTRADAS")
 
 
+        try: # DESCRIÇÃO FICHA TÉCNICA
 
+            btnFichaTecnica = navegador.find_element(By.XPATH, "//button[contains(@class, 'ProductTechnicalSpecs_collapsibleBoxTitle__P4fPk')]")
+            btnFichaTecnica.click()
+
+            time.sleep(1)
+
+            try:
+                tableFichaTecnica = navegador.find_element(By.XPATH, "//table[contains(@class, 'ProductTechnicalSpecs_collapsibleBoxTable__RESpp')]")
+                trTable = tableFichaTecnica.find_elements(By.XPATH, ".//tr")
+
+                for tr in trTable:
+                    tdTable = tr.find_elements(By.XPATH, ".//td")
+
+                    for td in tdTable:
+                        td = td.text
+                        print(td)
+            except NoSuchElementException:
+                print("TABELA NAO ENCONTRADA")
+
+        except NoSuchElementException as e:
+            print(f"DESCRIÇÃO RESUMIDA NAO ENCONTRADA: {e}")
+
+        # TERMINAR FICHA TÉCNICA E CONTINUAR COM DETALHES COMPLETOS E AVALIAÇÕES
 
 # CELULARES E SMARTPHONES
 def coletaDadosMagazine(): # OK 
