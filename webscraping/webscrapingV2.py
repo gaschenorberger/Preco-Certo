@@ -794,7 +794,7 @@ def coletaDadosAmericanas(): # OK
         try: # Obter parcelas de cada produto
             parcelas = navegador.find_element(By.XPATH, "//div[contains(@class, 'ProductPrice_installment__XemVq')]")
             parcelas = parcelas.get_attribute("textContent").strip() #.strip() remove espaços no começo e no fim
-            parcelas = " ".join(parcelas.split()) 
+            parcelas = " ".join(parcelas.split())
 
             print("================PARCELAS================")
             print(parcelas)
@@ -855,24 +855,22 @@ def coletaDadosAmericanas(): # OK
 
 
         try: # DESCRIÇÃO FICHA TÉCNICA
+            divFichaTecnica = navegador.find_element(By.XPATH, "//div[contains(@class, 'ProductTechnicalSpecs_collapsibleBox__3jYPb')]")
+            btnFichaTecnica = divFichaTecnica.find_element(By.XPATH, ".//img")
+            navegador.execute_script("arguments[0].scrollIntoView();", btnFichaTecnica)
+            navegador.execute_script("arguments[0].click();", btnFichaTecnica)  # Clique via JS
 
-            btnFichaTecnica = navegador.find_element(By.XPATH, "//button[contains(@class, 'ProductTechnicalSpecs_collapsibleBoxTitle__P4fPk')]")
-            btnFichaTecnica.click()
-
-            time.sleep(1)
+            time.sleep(2)  # Aguarde a tabela aparecer
 
             try:
                 tableFichaTecnica = navegador.find_element(By.XPATH, "//table[contains(@class, 'ProductTechnicalSpecs_collapsibleBoxTable__RESpp')]")
-                trTable = tableFichaTecnica.find_elements(By.XPATH, ".//tr")
-
+                trTable = tableFichaTecnica.find_elements(By    .XPATH, ".//tr")
                 for tr in trTable:
                     tdTable = tr.find_elements(By.XPATH, ".//td")
-
                     for td in tdTable:
-                        td = td.text
-                        print(td)
-            except NoSuchElementException:
-                print("TABELA NAO ENCONTRADA")
+                        print(td.text)
+            except NoSuchElementException as e:
+                print(f"TABELA NAO ENCONTRADA: {e}")
 
         except NoSuchElementException as e:
             print(f"DESCRIÇÃO RESUMIDA NAO ENCONTRADA: {e}")
