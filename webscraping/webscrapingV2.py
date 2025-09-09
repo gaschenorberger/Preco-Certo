@@ -890,7 +890,7 @@ def coletaDadosAmericanas(): # OK
             print("=============================================")
 
         except NoSuchElementException as e:
-            print(f"DESCRIÇÃO RESUMIDA NAO ENCONTRADA: {e}")
+            print(f"DESCRIÇÃO RESUMIDA NAO ENCONTRADA")
 
         
 
@@ -910,7 +910,23 @@ def coletaDadosAmericanas(): # OK
             print("=============================================\n\n")
 
         except NoSuchElementException as e:
-            print(f"DECRIÇÃO COMPLETA NÃO ENCONTRADA: {e}")
+            print(f"DECRIÇÃO COMPLETA NÃO ENCONTRADA")
+
+
+
+        try:
+
+            divAvaliacoes = navegador.find_element(By.XPATH, "//div[contains(@class, 'konfidency-reviews-summary-inner') and contains(@class, 'rating')]")
+            spanMedia = divAvaliacoes.find_element(By.XPATH, ".//span[contains(@class, 'aggregate-rating')]")
+            spanTotalAvaliacoes = divAvaliacoes.find_element(By.XPATH, ".//span[contains(@class, 'review-count-only')]")
+
+
+            print(spanMedia.text)
+            print(spanTotalAvaliacoes.text)
+
+
+        except NoSuchElementException as e:
+            print("AVALIAÇÕES NÃO ENCONTRADAS")
 
 
 # CELULARES E SMARTPHONES
