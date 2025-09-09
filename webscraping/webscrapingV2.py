@@ -904,7 +904,8 @@ def coletaDadosAmericanas(): # OK
             time.sleep(0.5)
 
             infCompleta = navegador.find_element(By.XPATH, "//p[contains(@data-testid, 'product-description-p')]")
-            print(infCompleta.text)
+            infCompleta = infCompleta.text
+            print(infCompleta)
 
             print("=============================================\n\n")
 
