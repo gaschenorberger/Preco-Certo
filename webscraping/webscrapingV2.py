@@ -581,7 +581,7 @@ def coletaDadosMerLivre(): # OK
 
         #===============================PÁGINA DO PRODUTO INFORMAÇÕES================================
 
-    for link in linkList:
+    for link in linkList: # Página do produto
 
         print("===========================================")
         print("INICIANDO COLETA DADOS DA PÁGINA DO PRODUTO\n")
@@ -590,7 +590,7 @@ def coletaDadosMerLivre(): # OK
         time.sleep(2)
 
 
-        try:
+        try: # Obter parcelas
             parcelas = navegador.find_element(By.ID, "pricing_price_subtitle")
             parcelas = parcelas.get_attribute("textContent").strip()
             parcelas = " ".join(parcelas.split())
@@ -693,8 +693,6 @@ def coletaDadosMerLivre(): # OK
 
     navegador.quit() 
 
-
-
 # CELULARES E SMARTPHONES
 def coletaDadosAmericanas(): # OK
     navegador = iniciar_chrome(url="https://www.americanas.com.br/", headless='off')
@@ -783,8 +781,8 @@ def coletaDadosAmericanas(): # OK
         print("Produtos não carregaram a tempo. Verifique se o XPath está correto ou se é necessário rolar mais")
 
 
-    for link in linkList:
-        print("===========================================")
+    for link in linkList: # Página do produto
+        print("\n\n=======================================================")
         print("INICIANDO COLETA DADOS DA PÁGINA DO PRODUTO\n")
 
         navegador.get(link)
@@ -869,7 +867,6 @@ def coletaDadosAmericanas(): # OK
             navegador.execute_script("arguments[0].click();", btnFichaTecnica)
             time.sleep(2)  
 
-
             try:
                 tableFichaTecnica = navegador.find_element(By.XPATH, "//table[contains(@class, 'ProductTechnicalSpecs_collapsibleBoxTable__RESpp')]")
                 trTable = tableFichaTecnica.find_elements(By.XPATH, ".//tr")
@@ -894,7 +891,7 @@ def coletaDadosAmericanas(): # OK
 
         
 
-        try:
+        try: # Obter informações completas do produto
 
             print("\n================INF COMPLETAS================")
 
@@ -907,30 +904,42 @@ def coletaDadosAmericanas(): # OK
             infCompleta = infCompleta.text
             print(infCompleta)
 
-            print("=============================================\n\n")
+            print("=============================================\n")
 
         except NoSuchElementException as e:
             print(f"DECRIÇÃO COMPLETA NÃO ENCONTRADA")
 
 
 
-        try:
+        try: # Obter avaliações 
+
+            print("================AVALIAÇÕES================")
+            
 
             divAvaliacoes = navegador.find_element(By.XPATH, "//div[contains(@class, 'konfidency-reviews-summary-inner') and contains(@class, 'rating')]")
-            spanMedia = divAvaliacoes.find_element(By.XPATH, ".//span[contains(@class, 'aggregate-rating')]")
-            spanTotalAvaliacoes = divAvaliacoes.find_element(By.XPATH, ".//span[contains(@class, 'review-count-only')]")
 
+            try:
+                spanMedia = divAvaliacoes.find_element(By.XPATH, ".//span[contains(@class, 'aggregate-rating')]")
+                spanTotalAvaliacoes = divAvaliacoes.find_element(By.XPATH, ".//span[contains(@class, 'review-count-only')]")
 
-            print(spanMedia.text)
-            print(spanTotalAvaliacoes.text)
+                print(spanMedia.get_attribute("textContent"))
+                print(spanTotalAvaliacoes.get_attribute("textContent"))
+                
+
+                print("==========================================\n")
+
+            except NoSuchElementException as e:
+                print(f"AVALIAÇÕES NÃO ENCONTRADAS")
+                print("==========================================\n")
 
 
         except NoSuchElementException as e:
-            print("AVALIAÇÕES NÃO ENCONTRADAS")
+            print(f"DIV PRINCIPAL AVALIAÇÕES NAO ENCONTRADA: {e}\n")
+            print("==========================================\n")
 
 
 # CELULARES E SMARTPHONES
-def coletaDadosMagazine(): # OK 
+def coletaDadosMagazine():  
 
     navegador = iniciar_chrome(url='https://www.magazineluiza.com.br/celulares-e-smartphones/l/te/', headless='off')
 
@@ -939,6 +948,8 @@ def coletaDadosMagazine(): # OK
     site = BeautifulSoup(navegador.page_source, 'html.parser')
     divProdutos = site.find('div', {'data-testid': 'mod-productlist'})
     cards = divProdutos.find_all('a', {'data-testid': 'product-card-container'})
+
+    linkList = []
 
     for card in cards[:5]:
     
@@ -958,6 +969,7 @@ def coletaDadosMagazine(): # OK
         urlProduto = card.get("href")
         urlImg = imgProduto.get("src")
         urlProduto = f'https://www.magazineluiza.com.br{urlProduto}'
+        linkList.append(urlProduto)
 
         print(f"{produto} | {preco}")
         print(f'LINK: {urlProduto}')
@@ -966,13 +978,62 @@ def coletaDadosMagazine(): # OK
 
         categorias = detectar_categorias(produto)
 
-        
         inserirDados(produto, "Magazine Luiza", preco, urlProduto, urlImg, categorias)
+
+
+    for link in linkList:
+        print("\n\n=======================================================")
+        print("INICIANDO COLETA DADOS DA PÁGINA DO PRODUTO\n")
+
+        navegador.get(link)
+        time.sleep(2)
+
+
+        try:
+
+            divParcelas = navegador.find_element(By.XPATH, "//div[contains(@data-testid, 'product-price')]")
+
+            try:
+
+                parcelas = divParcelas.find_element(By.XPATH, ".//p[contains(@data-testid, 'installment')]")
+                parcelas = parcelas.get_attribute("innerText")
+                print(parcelas)
+
+            except NoSuchElementException as e:
+                print("PARCELAS NAO ENCONTRADAS")
+            
+        except NoSuchElementException as e:
+            print(f"DIV PARCELAS NAO ENCONTRADA {e}")
+
+
+        try:
+
+            divImagens = navegador.find_element(By.XPATH, "//div[contains(@data-testid, 'media-gallery')]")
+
+            try:
+                
+                miniaturas = divImagens.find_elements(By.XPATH, ".//div[contains(@class, 'sc-fqkvVR') and contains(@class, 'sc-heIBml') and contains(@class, 'eRmBxT')]")
+
+                for mini in miniaturas:
+                    ActionChains(navegador).move_to_element(mini).perform()
+                    time.sleep(0.5)
+
+                    img = divImagens.find_element(By.XPATH, ".//img[contains(@data-testid, 'image-selected-thumbnail')]")
+                    print(img.get_attribute("src"))
+
+            except NoSuchElementException:
+                print("IMAGENS NÃO ENCONTRADAS")
+
+        except NoSuchElementException as e:
+            print(f"DIV IMAGENS NÃO ENCONTRADAS: {e}")
+
+
+             
     
     navegador.quit()
 
 # CELULARES E SMARTPHONES
-def coletaCasasBahia(): # OK 
+def coletaCasasBahia():  
 
     navegador = iniciar_chrome(url='https://www.casasbahia.com.br/c/telefones-e-celulares?filtro=c38', headless='off')
 
@@ -1219,7 +1280,7 @@ def coletaCompleta():
 
 # filtroCompleto()
 # coletaCompleta()
-coletaDadosAmericanas()
+coletaDadosMagazine()
 
 # coletaDadosAmericanas()
 
