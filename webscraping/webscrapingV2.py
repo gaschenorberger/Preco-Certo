@@ -1028,7 +1028,42 @@ def coletaDadosMagazine():
             print(f"DIV IMAGENS NÃO ENCONTRADAS: {e}")
 
 
-             
+
+        try:
+
+            divInfTecnica = navegador.find_element(By.XPATH, "//div[contains(@data-testid, 'technical-sheet-detail')]")
+
+            try:
+
+                ulElements = divInfTecnica.find_element(By.XPATH, ".//ul")
+                liElements = ulElements.find_elements(By.XPATH, ".//li")
+
+                for li in liElements:
+                    informacoes = li.get_attribute("textContent")
+
+                    print(informacoes)
+
+            except NoSuchElementException:
+                print("INFORMAÇÕES UL/LI NÃO ENCONTRADAS")
+
+        except NoSuchElementException as e:
+            print(f"DIV INFORMAÇÕES RESUMIDAS NÃO ENCONTRADAS: {e}")
+
+
+        
+        try:
+
+            print("\n\n INF COMPLETA")
+
+            divInfCompleta = navegador.find_element(By.XPATH, "//div[contains(@data-testid, 'product-detail-description')]")
+            infCompleta = divInfCompleta.find_element(By.XPATH, ".//div[contains(@data-testid, 'rich-content-container')]")
+
+            descrCompleta = infCompleta.get_attribute("textContent")
+
+            print(descrCompleta)
+
+        except NoSuchElementException as e:
+            print(f"DIV INFORMAÇÕES COMPLETAS NÃO ENCONTRADAS: {e}")
     
     navegador.quit()
 
