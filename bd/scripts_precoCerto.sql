@@ -199,6 +199,16 @@ CREATE TABLE categorias (
 );
 
 
+CREATE TABLE tbl_pagina_produto (
+    id SERIAL PRIMARY KEY,
+    avaliacoes VARCHAR(30),
+    parcelas VARCHAR(50),
+    imagens_url, --CONTINUAR
+    ficha_tecnica,
+    descr_completa
+)
+
+
 INSERT INTO categorias (nome) VALUES
 ('iPhone'),
 ('Samsung'),
@@ -219,7 +229,7 @@ select * from categorias;
 
 -- VIEW PRA PUXAR CATEGORIAS ESPECIFICAS
 
-CREATE OR REPLACE VIEW VW_PRODUTOS_CATEGORIAS AS
+CREATE OR REPLACE VIEW VW_PRODUTOS_TL_INICIAL AS
 SELECT
     p.id AS produto_id,
     p.nome AS nome_produto,
@@ -231,9 +241,10 @@ SELECT
     c.id AS categoria_id,
     c.nome AS nome_categoria
 FROM
-    produtos p
-JOIN TBL_PRODUTOS_TELA_INI pc ON p.id = pc.produto_id
-JOIN categorias c ON pc.categoria_id = c.id;
+    TBL_PRODUTOS_TELA_INI p
+JOIN TBL_PRODUTOS_CATEGORIAS pc ON p.id = pc.produto_id
+JOIN TBL_CATEGORIAS_PDTOS c ON pc.categoria_id = c.id
+WHERE p.site_origem <> 'Casas Bahia'; -- EXCLUINDO A CASAS BAHIA DA CONSULTA POR HORA
 
 
 
@@ -250,6 +261,14 @@ CREATE VIEW AS VW_PRODUTOS_MAGAZINE
         criado_em
     FROM VW_PRODUTOS_CATEGORIAS
     WHERE site_origem = 'Magazine Luiza';
+
+
+
+
+CREATE VIEW AS VW_PAGINA_PRODUTO
+    SELECT 
+        nome_produto,
+        --CONTINUAR
 
 
 

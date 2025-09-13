@@ -399,8 +399,7 @@ def coletaDadosAmazon(): # OK
 
                 print("================IMAGENS================")
                 
-                indiceInicial = 0
-                for imagem in imagens:
+                for indice, imagem in enumerate(imagens[:3]):  
 
                     # imagem.click()
                     
@@ -411,13 +410,12 @@ def coletaDadosAmazon(): # OK
                         
                     largeImg = wait.until(EC.presence_of_element_located((
                         By.XPATH,
-                        f"//li[contains(@class, 'image') and contains(@class, 'item') and contains(@class, 'itemNo{indiceInicial}') and contains(@class, 'maintain-height') and contains(@class, 'selected')]//img"
+                        f"//li[contains(@class, 'image') and contains(@class, 'item') and contains(@class, 'itemNo{indice}') and contains(@class, 'maintain-height') and contains(@class, 'selected')]//img"
                     )))
 
                     linkSrc = largeImg.get_attribute("src")
                     print(linkSrc)
 
-                    indiceInicial+=1
 
                 print("=======================================\n")
 
@@ -622,7 +620,7 @@ def coletaDadosMerLivre(): # OK
             try:
                 imagens_grandes = navegador.find_elements(By.XPATH, "//figure[contains(@class, 'ui-pdp-gallery__figure')]//img")
                 links_imgs = set()
-                for img in imagens_grandes:
+                for img in imagens_grandes[:3]:
                     src = img.get_attribute("src")
                     if src and src not in links_imgs:
                         print(src)
@@ -822,7 +820,7 @@ def coletaDadosAmericanas(): # OK
                 divContainerImg = navegador.find_element(By.XPATH, "//div[contains(@class, 'ImageGallerySelector_selectorsContainer__dVmbp')]")
                 btnImgMini = divContainerImg.find_elements(By.XPATH, ".//button")
 
-                for btn in btnImgMini:
+                for btn in btnImgMini[:3]:
                     ActionChains(navegador).move_to_element(btn).perform()
                     time.sleep(0.5)
 
@@ -989,15 +987,18 @@ def coletaDadosMagazine():
         time.sleep(2)
 
 
-        try:
+        try: # Obter parcelas
+
+            print("\n================PARCELAS================")
 
             divParcelas = navegador.find_element(By.XPATH, "//div[contains(@data-testid, 'product-price')]")
 
             try:
-
+                
                 parcelas = divParcelas.find_element(By.XPATH, ".//p[contains(@data-testid, 'installment')]")
                 parcelas = parcelas.get_attribute("innerText")
                 print(parcelas)
+                print("========================================")
 
             except NoSuchElementException as e:
                 print("PARCELAS NAO ENCONTRADAS")
@@ -1006,7 +1007,10 @@ def coletaDadosMagazine():
             print(f"DIV PARCELAS NAO ENCONTRADA {e}")
 
 
-        try:
+
+        try: # Obter imagens
+            
+            print("\n================IMAGENS================")   
 
             divImagens = navegador.find_element(By.XPATH, "//div[contains(@data-testid, 'media-gallery')]")
 
@@ -1014,12 +1018,14 @@ def coletaDadosMagazine():
                 
                 miniaturas = divImagens.find_elements(By.XPATH, ".//div[contains(@class, 'sc-fqkvVR') and contains(@class, 'sc-heIBml') and contains(@class, 'eRmBxT')]")
 
-                for mini in miniaturas:
+                for mini in miniaturas[:3]:
                     ActionChains(navegador).move_to_element(mini).perform()
                     time.sleep(0.5)
 
                     img = divImagens.find_element(By.XPATH, ".//img[contains(@data-testid, 'image-selected-thumbnail')]")
                     print(img.get_attribute("src"))
+
+                print("=======================================")
 
             except NoSuchElementException:
                 print("IMAGENS NÃO ENCONTRADAS")
@@ -1029,7 +1035,9 @@ def coletaDadosMagazine():
 
 
 
-        try:
+        try: # Obter descrição resumida / ficha técnica
+
+            print("\n================FICHA TÉCNICA================")  
 
             divInfTecnica = navegador.find_element(By.XPATH, "//div[contains(@data-testid, 'technical-sheet-detail')]")
 
@@ -1043,6 +1051,8 @@ def coletaDadosMagazine():
 
                     print(informacoes)
 
+                print("=============================================")
+
             except NoSuchElementException:
                 print("INFORMAÇÕES UL/LI NÃO ENCONTRADAS")
 
@@ -1051,9 +1061,9 @@ def coletaDadosMagazine():
 
 
         
-        try:
+        try: # Obter descrição completa do produto
 
-            print("\n\n INF COMPLETA")
+            print("\n================INF COMPLETA================")  
 
             divInfCompleta = navegador.find_element(By.XPATH, "//div[contains(@data-testid, 'product-detail-description')]")
             infCompleta = divInfCompleta.find_element(By.XPATH, ".//div[contains(@data-testid, 'rich-content-container')]")
@@ -1062,8 +1072,39 @@ def coletaDadosMagazine():
 
             print(descrCompleta)
 
+            print("============================================")
+
         except NoSuchElementException as e:
             print(f"DIV INFORMAÇÕES COMPLETAS NÃO ENCONTRADAS: {e}")
+
+
+        
+        try: # Obter avaliações
+
+            print("\n================AVALIAÇÕES================")
+
+            divAvaliacoes = navegador.find_element(By.XPATH, "//div[contains(@data-testid, 'mod-row')]")
+
+            try:
+
+                spanAvaliacoes = divAvaliacoes.find_element(By.XPATH, ".//span[contains(@format, 'score-count')]")
+
+                spanSplit = spanAvaliacoes.get_attribute("textContent")
+                spanSplit = spanSplit.split(" ")
+
+                spanMedia = spanSplit[0]
+                spanTotalAvaliacoes = spanSplit[1]
+
+                print(spanMedia, spanTotalAvaliacoes)
+
+                print("==========================================")
+
+            except NoSuchElementException as e:
+                print(f"ERRO AO EXTRAIR AVALIAÇÕES: {e}")
+
+        except NoSuchElementException as e:
+            print("DIV DAS AVALIAÇÕES NÃO ENCONTRADAS")
+
     
     navegador.quit()
 
@@ -1310,12 +1351,12 @@ def coletaCompleta():
     coletaDadosAmazon(), time.sleep(2)
     coletaDadosMerLivre(), time.sleep(2)
     coletaDadosAmericanas(), time.sleep(2)
-    coletaDadosMagazine(), time.sleep(2)
-    coletaCasasBahia()
+    coletaDadosMagazine()
+    # coletaCasasBahia()
 
 # filtroCompleto()
-# coletaCompleta()
-coletaDadosMagazine()
+coletaCompleta()
+# coletaDadosMagazine()
 
 # coletaDadosAmericanas()
 
