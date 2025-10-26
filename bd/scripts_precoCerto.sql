@@ -201,11 +201,12 @@ CREATE TABLE categorias (
 
 CREATE TABLE tbl_pagina_produto (
     id SERIAL PRIMARY KEY,
-    avaliacoes VARCHAR(30),
+    avaliacao VARCHAR(30),
+    quant_avaliacao VARCHAR(10),
     parcelas VARCHAR(50),
-    imagens_url, --CONTINUAR
-    ficha_tecnica,
-    descr_completa
+    imagens_url JSONB, 
+    ficha_tecnica TEXT,
+    descr_completa TEXT
 )
 
 

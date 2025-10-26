@@ -18,6 +18,7 @@ from datetime import date
 import psycopg2
 import random
 import re
+import json
 
 
 
@@ -147,6 +148,39 @@ def inserirDados(produto_nome, loja_nome, preco, link_produto, href_img, lista_c
     finally:
         cursor.close()
         conexao.close()
+
+
+def inserirDadosTLProduto(avaliacoes, quantAvaliacoes, parcelas, imagens_lista, ficha_tecnica, descr_completa):
+    try:
+        conexao = conectar()
+        cursor = conexao.cursor()
+
+        # Inserir os dados diretamente na tabela TBL_PAGINA_PRODUTO
+        cursor.execute("""
+            INSERT INTO TBL_PAGINA_PRODUTO (avaliacao, quant_avalicao, parcelas, imagens_url, ficha_tecnica, descr_completa)
+            VALUES (%s, %s, %s, %s::jsonb, %s, %s)
+            RETURNING id
+        """, (
+            avaliacoes,
+            quantAvaliacoes,
+            parcelas,
+            json.dumps(imagens_lista),  # converte lista Python para JSON
+            ficha_tecnica,
+            descr_completa
+        ))
+
+        produto_id = cursor.fetchone()[0]
+        conexao.commit()
+
+        print(f"✅ Dados inseridos com sucesso na página do produto (ID: {produto_id})")
+
+    except Exception as erro:
+        print(f"❌ Erro ao inserir dados na página de produto: {erro}")
+
+    finally:
+        cursor.close()
+        conexao.close()
+
 
 def deletarDados(link_produto):
     try:
@@ -389,7 +423,7 @@ def coletaDadosAmazon(): # OK
 
 
 
-
+            listImg = []
             try: # Obter imagens do produto
 
                 #imagens pequenas -> imagens = navegador.find_elements(By.XPATH, "//li[contains(@class, 'a-spacing-small') and contains(@class, 'item') and contains(@class, 'imageThumbnail') and contains(@class, 'a-declarative')]//img")
@@ -415,6 +449,8 @@ def coletaDadosAmazon(): # OK
 
                     linkSrc = largeImg.get_attribute("src")
                     print(linkSrc)
+
+                    listImg.append(linkSrc)
 
 
                 print("=======================================\n")
@@ -459,7 +495,7 @@ def coletaDadosAmazon(): # OK
 
             
 
-            try:
+            try: # Obter informações completas
                 # Elemento UL das informações completas
                 ulInfCompletas = navegador.find_element(By.XPATH, "//ul[contains(@class, 'a-unordered-list') and contains(@class, 'a-vertical') and contains(@class, 'a-spacing-mini')]")
 
@@ -484,7 +520,7 @@ def coletaDadosAmazon(): # OK
 
 
 
-            try:
+            try: # Obter Avaliações
                 # Espera a div principal carregar
                 divAvaliacoes = WebDriverWait(navegador, 5).until(
                     EC.presence_of_element_located((By.ID, "averageCustomerReviews"))
@@ -513,6 +549,9 @@ def coletaDadosAmazon(): # OK
                 print("AVALIAÇÕES NÃO ENCONTRADAS")
 
             time.sleep(1)
+
+
+            # inserirDadosTLProduto(avaliacao, quantAvaliacao, parcelas, listImg, )
 
 
 
@@ -1355,8 +1394,8 @@ def coletaCompleta():
     # coletaCasasBahia()
 
 # filtroCompleto()
-coletaCompleta()
-# coletaDadosMagazine()
+# coletaCompleta()
+coletaDadosAmazon()
 
 # coletaDadosAmericanas()
 
