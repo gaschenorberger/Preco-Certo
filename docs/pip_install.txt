@@ -1,0 +1,8 @@
+python.exe -m pip install --upgrade pip
+pip install --upgrade setuptools
+pip install selenium
+pip install webdriver_manager
+pip install undetected_chromedriver
+pip install bs4
+pip install requests
+pip install psycopg2
