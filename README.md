@@ -1,4 +1,4 @@
-# 📊 Preço-Certo
+#  Preço-Certo
 
 Plataforma de monitoramento de preços desenvolvida para coletar, armazenar e visualizar dados de produtos a partir de diferentes lojas online.
 
@@ -6,20 +6,20 @@ O projeto tem como objetivo permitir o acompanhamento de variações de preços,
 
 ---
 
-## 🚀 Sobre o Projeto
+##  Sobre o Projeto
 
 O **Preço-Certo** é uma aplicação completa (Full Stack + Data Collection) composta por:
 
-- 🐍 Serviço de Web Scraping para coleta automatizada de preços
-- 🗄️ Banco de dados para armazenamento histórico
-- ⚙️ Backend responsável por disponibilizar os dados
-- 🎨 Frontend para visualização e interação com as informações coletadas
+-  Serviço de Web Scraping para coleta automatizada de preços
+-  Banco de dados para armazenamento histórico
+-  Backend responsável por disponibilizar os dados
+-  Frontend para visualização e interação com as informações coletadas
 
 A arquitetura foi pensada para separar responsabilidades, garantindo organização, escalabilidade e manutenção facilitada.
 
 ---
 
-## 🧠 Arquitetura do Sistema
+##  Arquitetura do Sistema
 
 ```text
 [ Web Scraping - Python ] 
@@ -34,9 +34,9 @@ A arquitetura foi pensada para separar responsabilidades, garantindo organizaç�
 
 ---
 
-## 👥 Participantes
+##  Participantes
 
-### 👨‍💻 Gabriel Alvise  
+###  Gabriel Alvise  
 - Desenvolvimento do Web Scraping (Python)  
 - Modelagem e integração com PostgreSQL  
 - Estruturação e implementação do Backend  
@@ -46,7 +46,7 @@ GitHub: https://github.com/gaschenorberger
 
 ---
 
-### 👨‍💻 João Gabriel Gnoatto  
+###  João Gabriel Gnoatto  
 - Desenvolvimento do Frontend em React  
 - Interface e experiência do usuário  
 - Integração com o backend  
@@ -55,7 +55,7 @@ GitHub: https://github.com/jggnoatto
 
 ---
 
-## 🛠 Tecnologias Utilizadas
+##  Tecnologias Utilizadas
 
 ### 🔹 Web Scraping
 - Python
@@ -76,7 +76,7 @@ GitHub: https://github.com/jggnoatto
 
 ---
 
-## 🎯 Objetivo Técnico
+##  Objetivo Técnico
 
 O projeto foi desenvolvido com foco em:
 
@@ -88,7 +88,7 @@ O projeto foi desenvolvido com foco em:
 
 ---
 
-## 📌 Status do Projeto
+##  Status do Projeto
 
 Projeto em desenvolvimento e evolução contínua, com melhorias previstas para:
 
@@ -99,7 +99,7 @@ Projeto em desenvolvimento e evolução contínua, com melhorias previstas para:
 
 ---
 
-## 📬 Contato
+##  Contato
 
 Gabriel Alvise  
 📧 gabrielalvisedev@gmail.com  
