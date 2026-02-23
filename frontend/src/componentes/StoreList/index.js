@@ -10,27 +10,27 @@ function StoreList(){
     return(
         <div className="storeList">
                 <a className="storeLink" href="https://www.amazon.com.br">
-                    <img className="storeLogo" src={amazon}/>
+                    <img className="storeLogo" src={amazon } alt=""/>
                     Amazon
                 </a>
                 <a className="storeLink" href="https://www.americanas.com.br">
-                    <img className="storeLogo" src={americanas}/>
+                    <img className="storeLogo" src={americanas} alt=""/>
                     Americanas
                 </a>
                 <a className="storeLink" href="https://www.casasbahia.com.br">
-                    <img className="storeLogo" src={casasBahia}/>
+                    <img className="storeLogo" src={casasBahia} alt=""/>
                     Casas Bahia
                 </a>
                 <a className="storeLink" href="https://www.magazineluiza.com.br">
-                    <img className="storeLogo" src={magaLu}/>
+                    <img className="storeLogo" src={magaLu} alt=""/>
                     MagaLu
                 </a>
                 <a className="storeLink" href="https://www.mercadolivre.com.br">
-                    <img className="storeLogo" src={mercadoLivre}/>
+                    <img className="storeLogo" src={mercadoLivre} alt=""/>
                     Mercado Livre
                 </a>
                 <a className="storeLink" href="#">
-                    <img className="storeLogo" src={seeMore}/>
+                    <img className="storeLogo" src={seeMore} alt=""/>
                     Veja mais
                 </a>
             </div>

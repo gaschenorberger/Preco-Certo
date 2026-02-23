@@ -1,4 +1,5 @@
 version: "3.8"
+
 services:
   db:
     image: postgres:17
@@ -11,3 +12,21 @@ services:
       - "5432:5432"
     volumes:
       - ./db:/docker-entrypoint-initdb.d
+      - ./postgres_data:/var/lib/postgresql/data
+    command: >
+      sh -c "psql -U postgres -d bdPrecoCerto -f /docker-entrypoint-initdb.d/init.sql && 
+      docker-entrypoint.sh postgres"
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules # Isso protege os módulos instalados no Docker
+    environment:
+      - CHOKIDAR_USEPOLLING=true # Essencial para o React atualizar no Windows
+    stdin_open: true # Mantém o processo do React interativo
+    depends_on:
+      - db
