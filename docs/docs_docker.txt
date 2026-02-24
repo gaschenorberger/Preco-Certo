@@ -1,0 +1,11 @@
+O projeto Preco Certo para ser rodado localmente inicia através de um container Docker.
+
+Como isso é feito?
+
+1. Você deve ter o Docker Desktop instalado na sua máquina (https://docs.docker.com/desktop/setup/install/windows-install/)
+2. Após isso, deve abrir o Docker Desktop para iniciar o serviço no windows.
+3. No diretório do projeto deve executar "docker compose up -d"
+4. Esperar todo processo ser concluído.
+5. Após todos os containers estiverem rodando, você poderá acessar "http://localhost:3000/"
+
+Utilizando o docker, quando sobe o container, ele automaticamente ja inicia o banco de dados Postgres, inicia o frontend react e inicia o backend Node
