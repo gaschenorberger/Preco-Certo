@@ -1,5 +1,7 @@
 #  Preço-Certo
 
+https://precocert.netlify.app/
+
 Plataforma de monitoramento de preços desenvolvida para coletar, armazenar e visualizar dados de produtos a partir de diferentes lojas online.
 
 O projeto tem como objetivo permitir o acompanhamento de variações de preços, possibilitando análises estratégicas e tomadas de decisão baseadas em dados.
