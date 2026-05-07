@@ -1,0 +1,658 @@
+MELHORIAS RECOMENDADAS - BACKEND, BANCO DE DADOS E WEBSCRAPING
+
+Projeto: Preco Certo
+
+Este documento lista melhorias recomendadas com base na estrutura atual do backend, banco de dados e webscraping. O foco e tornar o projeto mais robusto, seguro, organizado e facil de manter.
+
+
+1. BACKEND
+
+1.1 Criar um novo backend com Java Spring Boot
+
+A ideia de reconstruir o backend em Java Spring Boot faz sentido para este projeto, principalmente porque o sistema tende a crescer e lidar com dados importantes de produtos, historico de precos, usuarios e monitoramento.
+
+Principais ganhos esperados:
+- Melhor organizacao por camadas.
+- Mais facilidade para manutencao.
+- Melhor controle de seguranca.
+- Tipagem forte.
+- Melhor estrutura para APIs REST.
+- Facilidade para criar validacoes.
+- Facilidade para trabalhar com banco usando JPA/Hibernate.
+- Melhor preparacao para autenticacao, autorizacao e regras de negocio.
+
+Estrutura recomendada:
+
+backend/
+  src/main/java/...
+    controller/
+    service/
+    repository/
+    model/
+    dto/
+    config/
+    exception/
+    security/
+
+Responsabilidade de cada camada:
+
+- Controller:
+  Receber requisicoes HTTP e devolver respostas para o frontend.
+
+- Service:
+  Concentrar regras de negocio, como filtros, comparacao de precos, historico e logica de monitoramento.
+
+- Repository:
+  Comunicar com o banco de dados.
+
+- Model/Entity:
+  Representar as tabelas do banco.
+
+- DTO:
+  Controlar quais dados entram e saem da API, evitando expor diretamente as entidades do banco.
+
+- Config:
+  Configuracoes gerais, como CORS, conexao, Swagger e seguranca.
+
+- Exception:
+  Tratamento padronizado de erros.
+
+- Security:
+  Autenticacao e autorizacao quando houver usuarios, login e produtos monitorados.
+
+
+1.2 Criar endpoints mais completos
+
+Atualmente o backend possui basicamente o endpoint /produtos. Para a evolucao do sistema, seria interessante criar endpoints especificos para cada necessidade do frontend.
+
+Endpoints sugeridos:
+
+- GET /produtos
+  Lista produtos da tela inicial.
+
+- GET /produtos/{id}
+  Busca os detalhes de um produto especifico.
+
+- GET /produtos/{id}/historico
+  Retorna o historico de precos do produto.
+
+- GET /produtos/{id}/comparacoes
+  Retorna produtos equivalentes ou precos do mesmo produto em outras lojas.
+
+- GET /categorias
+  Lista categorias disponiveis.
+
+- GET /categorias/{id}/produtos
+  Lista produtos por categoria.
+
+- GET /lojas
+  Lista lojas disponiveis.
+
+- GET /lojas/{id}/produtos
+  Lista produtos de uma loja.
+
+- GET /busca?termo=iphone
+  Busca produtos por nome.
+
+- POST /usuarios
+  Cadastro de usuarios.
+
+- POST /login
+  Login de usuarios.
+
+- GET /usuarios/{id}/monitorados
+  Lista produtos monitorados por usuario.
+
+- POST /usuarios/{id}/monitorados
+  Adiciona produto para monitoramento.
+
+- DELETE /usuarios/{id}/monitorados/{produtoId}
+  Remove produto monitorado.
+
+
+1.3 Melhorar seguranca
+
+Melhorias importantes:
+
+- Remover credenciais fixas do codigo.
+- Usar variaveis de ambiente para dados sensiveis.
+- Configurar application.properties ou application.yml com suporte a ambientes diferentes.
+- Criar autenticacao com JWT quando houver usuarios.
+- Criptografar senhas com BCrypt.
+- Validar todas as entradas recebidas pela API.
+- Padronizar erros para nao expor detalhes internos.
+- Configurar CORS apenas para dominios permitidos.
+
+
+1.4 Criar documentacao da API
+
+Adicionar Swagger/OpenAPI para documentar os endpoints.
+
+Beneficios:
+- Facilita testes.
+- Ajuda o frontend a entender os contratos da API.
+- Melhora a manutencao.
+- Serve como documentacao viva do sistema.
+
+
+1.5 Criar padrao de respostas
+
+Evitar respostas soltas e criar um formato padrao.
+
+Exemplo:
+
+{
+  "success": true,
+  "data": {},
+  "message": "Operacao realizada com sucesso"
+}
+
+Para erros:
+
+{
+  "success": false,
+  "error": "Produto nao encontrado",
+  "status": 404
+}
+
+
+1.6 Criar testes
+
+Testes recomendados:
+
+- Testes unitarios nos services.
+- Testes de integracao nos repositories.
+- Testes de API nos controllers.
+- Testes para validacao de regras importantes, como busca, historico e monitoramento.
+
+
+2. BANCO DE DADOS
+
+2.1 Lapidar melhor a modelagem das tabelas
+
+O banco atual ja possui uma boa base, mas precisa ser refinado para suportar melhor as paginas e funcionalidades futuras.
+
+Pontos principais:
+
+- Revisar nomes das tabelas e colunas.
+- Padronizar nomes em snake_case.
+- Evitar abreviacoes excessivas.
+- Usar tipos corretos para precos.
+- Criar relacionamentos mais claros.
+- Separar produto base de oferta por loja.
+- Melhorar estrutura da pagina de produto.
+- Criar tabelas auxiliares para imagens, ficha tecnica e descricoes.
+
+
+2.2 Separar produto de oferta
+
+Hoje a tabela de produtos mistura produto, preco, loja, url e imagem. Para comparacao de precos, o ideal e separar:
+
+- Produto:
+  Representa o item real, por exemplo "iPhone 16 Pro Max 256GB".
+
+- Oferta:
+  Representa uma loja vendendo aquele produto por determinado preco.
+
+Modelo sugerido:
+
+produtos
+- id
+- nome
+- marca
+- modelo
+- descricao
+- categoria_id
+- criado_em
+- atualizado_em
+
+lojas
+- id
+- nome
+- dominio
+- criado_em
+
+ofertas
+- id
+- produto_id
+- loja_id
+- preco_atual
+- url
+- imagem_url
+- disponivel
+- coletado_em
+- criado_em
+- atualizado_em
+
+historico_precos
+- id
+- oferta_id
+- preco
+- coletado_em
+
+Com isso, o sistema consegue comparar o mesmo produto em varias lojas de forma mais limpa.
+
+
+2.3 Ajustar tipo de preco
+
+Atualmente alguns precos aparecem como texto. O ideal e usar tipo numerico.
+
+Recomendacao:
+
+preco NUMERIC(10,2)
+
+Vantagens:
+- Permite ordenacao correta.
+- Permite filtros por menor e maior preco.
+- Permite calculos.
+- Facilita graficos.
+- Evita problemas com formatos como "4.679,90".
+
+O scraping deve normalizar o preco antes de salvar no banco.
+
+
+2.4 Criar tabela de imagens do produto
+
+Em vez de salvar varias imagens em um unico campo ou depender apenas da imagem principal, criar uma tabela propria.
+
+produto_imagens
+- id
+- produto_id
+- url
+- ordem
+- principal
+
+
+2.5 Criar tabela para ficha tecnica
+
+Em vez de salvar a ficha tecnica inteira como texto, criar estrutura chave/valor.
+
+produto_ficha_tecnica
+- id
+- produto_id
+- atributo
+- valor
+
+Exemplo:
+- Marca: Apple
+- Modelo: iPhone 16 Pro Max
+- Armazenamento: 256GB
+
+
+2.6 Criar views necessarias para cada pagina
+
+Views ajudam bastante o backend quando existe uma tela que sempre precisa dos mesmos dados.
+
+Views sugeridas:
+
+- vw_home_produtos
+  Produtos para a tela inicial, com menor preco, imagem principal, loja de menor preco e categoria.
+
+- vw_produto_detalhe
+  Dados completos da pagina de produto.
+
+- vw_produto_comparacao_precos
+  Lista de ofertas do mesmo produto em varias lojas.
+
+- vw_produto_historico_precos
+  Historico de preco por produto ou por oferta.
+
+- vw_produtos_por_categoria
+  Produtos agrupados por categoria.
+
+- vw_produtos_por_loja
+  Produtos agrupados por loja.
+
+- vw_produtos_busca
+  View otimizada para busca por nome, categoria, marca e loja.
+
+- vw_menores_precos
+  Produtos com menor preco atual.
+
+- vw_maiores_quedas_preco
+  Produtos com maior reducao de preco em determinado periodo.
+
+
+2.7 Criar indices
+
+Indices recomendados:
+
+- produtos(nome)
+- produtos(categoria_id)
+- ofertas(produto_id)
+- ofertas(loja_id)
+- ofertas(preco_atual)
+- historico_precos(oferta_id)
+- historico_precos(coletado_em)
+- categorias(nome)
+- lojas(nome)
+
+Para busca textual, considerar indice com full text search do PostgreSQL.
+
+
+2.8 Criar migrations
+
+Usar uma ferramenta de migracao para controlar alteracoes do banco.
+
+Opcoes recomendadas:
+- Flyway
+- Liquibase
+
+Como o backend novo seria Spring Boot, Flyway combina muito bem.
+
+Beneficios:
+- Evita scripts soltos.
+- Controla versao do banco.
+- Facilita subir o projeto em outro ambiente.
+- Ajuda equipe e manutencao futura.
+
+
+2.9 Criar seeds de desenvolvimento
+
+Criar dados iniciais para desenvolvimento:
+
+- categorias padrao;
+- lojas padrao;
+- alguns produtos de exemplo;
+- algumas ofertas;
+- historico simulado.
+
+Isso facilita testar o frontend e o backend sem depender sempre do scraping.
+
+
+3. WEBSCRAPING
+
+3.1 Separar o webscraping em arquivos e responsabilidades
+
+A ideia de modularizar o scraping e essencial. O arquivo atual concentra muitas responsabilidades em um unico lugar.
+
+Estrutura sugerida:
+
+webscraping/
+  main.py
+  config/
+    settings.py
+  database/
+    connection.py
+    product_repository.py
+  scrapers/
+    base_scraper.py
+    amazon_scraper.py
+    mercado_livre_scraper.py
+    americanas_scraper.py
+    magazine_luiza_scraper.py
+    casas_bahia_scraper.py
+  services/
+    price_normalizer.py
+    category_detector.py
+    product_service.py
+  models/
+    product.py
+    offer.py
+  utils/
+    logger.py
+    browser.py
+    retry.py
+
+
+3.2 Criar classe de banco de dados
+
+Criar uma classe ou modulo responsavel apenas pelo banco.
+
+Responsabilidades:
+
+- abrir conexao;
+- fechar conexao;
+- executar inserts;
+- executar updates;
+- buscar produto existente;
+- buscar ou criar loja;
+- buscar ou criar categoria;
+- salvar historico de preco;
+- salvar oferta;
+- tratar erros de banco.
+
+Exemplo conceitual:
+
+class Database:
+    def connect(self):
+        pass
+
+    def close(self):
+        pass
+
+    def get_or_create_store(self, name):
+        pass
+
+    def save_product(self, product):
+        pass
+
+    def save_offer(self, offer):
+        pass
+
+    def save_price_history(self, offer_id, price):
+        pass
+
+
+3.3 Criar uma classe base para scrapers
+
+Como todos os sites seguem uma ideia parecida, criar uma classe base ajuda a padronizar.
+
+Responsabilidades da classe base:
+
+- iniciar navegador;
+- fechar navegador;
+- aguardar carregamento;
+- tratar erros;
+- normalizar retorno;
+- definir contrato para coleta.
+
+Exemplo conceitual:
+
+class BaseScraper:
+    def start(self):
+        pass
+
+    def collect_home_offers(self):
+        raise NotImplementedError
+
+    def collect_product_details(self, url):
+        raise NotImplementedError
+
+    def close(self):
+        pass
+
+
+3.4 Criar uma classe para cada loja
+
+Cada loja deve ter seu proprio arquivo e sua propria classe.
+
+Exemplos:
+
+- AmazonScraper
+- MercadoLivreScraper
+- AmericanasScraper
+- MagazineLuizaScraper
+- CasasBahiaScraper
+
+Cada scraper deve retornar dados em um formato padrao, independentemente do HTML de cada site.
+
+Formato sugerido:
+
+{
+  "name": "Produto X",
+  "price": 1999.90,
+  "store": "Amazon",
+  "url": "https://...",
+  "image_url": "https://...",
+  "categories": ["Smartphone"]
+}
+
+
+3.5 Normalizar preco antes de salvar
+
+Criar uma funcao unica para transformar textos de preco em numero.
+
+Entradas possiveis:
+- "R$ 4.679,90"
+- "4.679,90"
+- "4679.90"
+- "4,679.90"
+
+Saida esperada:
+- 4679.90
+
+Isso evita dados inconsistentes no banco.
+
+
+3.6 Melhorar deteccao de categorias
+
+A funcao atual ja detecta categorias por palavras no nome. Ela pode virar um servico separado.
+
+Melhorias:
+
+- Criar lista configuravel de palavras-chave.
+- Permitir mais de uma categoria por produto.
+- Evitar duplicidades.
+- Criar regras mais claras.
+- Futuramente, guardar regras no banco.
+
+
+3.7 Criar logs
+
+Substituir prints por logs.
+
+Logs recomendados:
+
+- inicio da coleta;
+- fim da coleta;
+- produtos encontrados;
+- produtos inseridos;
+- produtos atualizados;
+- erros por loja;
+- tempo total da coleta.
+
+Usar niveis:
+
+- INFO
+- WARNING
+- ERROR
+- DEBUG
+
+
+3.8 Criar controle de execucao
+
+Hoje o script executa uma coleta diretamente no final do arquivo. O ideal e criar um main.py controlado.
+
+Exemplos:
+
+python main.py --loja amazon
+python main.py --loja mercado_livre
+python main.py --todas
+python main.py --busca "iphone 15"
+
+
+3.9 Criar tratamento de falhas e retry
+
+Scraping depende de paginas externas, entao falhas sao normais.
+
+Melhorias:
+
+- retry automatico em falhas temporarias;
+- timeout configuravel;
+- tratamento para elemento nao encontrado;
+- captura de screenshot em erro;
+- continuar coleta mesmo se uma loja falhar;
+- salvar erros em log.
+
+
+3.10 Separar coleta de tela inicial e pagina de produto
+
+O scraping pode ser separado em dois fluxos:
+
+- Coleta de ofertas/listagem:
+  Busca nome, preco, loja, url e imagem principal.
+
+- Coleta de detalhes:
+  Busca imagens adicionais, descricao, ficha tecnica, avaliacoes e parcelas.
+
+Isso facilita manutencao e evita que uma falha na pagina de detalhes impeça a coleta principal.
+
+
+3.11 Criar agendamento da coleta
+
+Depois que o scraping estiver estavel, criar execucao periodica.
+
+Opcoes:
+
+- Windows Task Scheduler.
+- Cron em Linux.
+- Job dentro de container.
+- Spring Scheduler no backend.
+- Ferramenta externa de automacao.
+
+Sugestao:
+No inicio, manter o scraping separado do backend e agendar sua execucao. Depois, avaliar se vale controlar pelo backend.
+
+
+4. INTEGRACAO ENTRE AS PARTES
+
+4.1 Fluxo recomendado final
+
+1. Scraping coleta ofertas das lojas.
+2. Scraping normaliza os dados.
+3. Scraping salva produtos, ofertas e historico no PostgreSQL.
+4. Banco organiza dados em tabelas e views.
+5. Backend Spring Boot consulta tabelas/views.
+6. Frontend consome endpoints especificos.
+
+
+4.2 Ordem recomendada de implementacao
+
+1. Refatorar o banco de dados.
+2. Criar migrations com Flyway.
+3. Criar backend Spring Boot novo.
+4. Criar endpoints principais.
+5. Modularizar o webscraping.
+6. Integrar scraping com o novo modelo do banco.
+7. Criar endpoints para pagina de produto.
+8. Criar endpoints para historico de precos.
+9. Criar autenticacao e usuarios.
+10. Criar monitoramento e alertas.
+
+
+5. PRIORIDADES
+
+Alta prioridade:
+
+- Criar modelo correto de produto, oferta e historico.
+- Trocar preco de texto para numerico.
+- Criar backend Spring Boot com camadas.
+- Criar endpoints para home, produto, comparacao e historico.
+- Modularizar o scraping.
+- Remover credenciais fixas do codigo.
+
+Media prioridade:
+
+- Criar views para cada pagina.
+- Criar logs no scraping.
+- Criar documentacao Swagger.
+- Criar testes no backend.
+- Criar migrations.
+
+Baixa prioridade:
+
+- Criar sistema completo de usuarios.
+- Criar alertas de preco.
+- Criar painel administrativo.
+- Criar metricas de scraping.
+- Automatizar deploy completo.
+
+
+6. CONCLUSAO
+
+O projeto ja tem uma boa base e uma arquitetura clara. A principal evolucao agora e transformar a estrutura atual em algo mais profissional e sustentavel.
+
+O backend novo em Spring Boot pode ser o centro mais robusto da aplicacao. O banco precisa ser refinado para representar melhor produto, oferta, loja e historico. O webscraping precisa ser separado em modulos, classes e responsabilidades, deixando cada loja independente e facilitando manutencoes futuras.
+
+Com essas melhorias, o Preco Certo ficara mais preparado para crescer, receber novas lojas, exibir historico real, comparar precos corretamente e futuramente permitir usuarios, produtos monitorados e alertas.
